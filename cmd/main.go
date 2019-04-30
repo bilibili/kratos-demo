@@ -34,11 +34,11 @@ func main() {
 		switch s {
 		case syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT:
 			ctx, cancel := context.WithTimeout(context.Background(), 35*time.Second)
-			defer cancel()
 			grpcSrv.Shutdown(ctx)
 			httpSrv.Shutdown(ctx)
 			log.Info("kratos-demo exit")
 			svc.Close()
+			cancel()
 			time.Sleep(time.Second)
 			return
 		case syscall.SIGHUP:

@@ -11,6 +11,7 @@ import (
 	"kratos-demo/internal/server/grpc"
 	"kratos-demo/internal/server/http"
 	"kratos-demo/internal/service"
+
 	"github.com/bilibili/kratos/pkg/conf/paladin"
 	"github.com/bilibili/kratos/pkg/log"
 )
@@ -34,8 +35,12 @@ func main() {
 		switch s {
 		case syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT:
 			ctx, cancel := context.WithTimeout(context.Background(), 35*time.Second)
-			grpcSrv.Shutdown(ctx)
-			httpSrv.Shutdown(ctx)
+			if err := grpcSrv.Shutdown(ctx); err != nil {
+				log.Error("grpcSrv.Shutdown error(%v)", err)
+			} // grpc
+			if err := httpSrv.Shutdown(ctx); err != nil {
+				log.Error("httpSrv.Shutdown error(%v)", err)
+			}
 			log.Info("kratos-demo exit")
 			svc.Close()
 			cancel()

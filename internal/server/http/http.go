@@ -3,6 +3,7 @@ package http
 import (
 	"net/http"
 
+	pb "kratos-demo/api"
 	"kratos-demo/internal/model"
 	"kratos-demo/internal/service"
 
@@ -29,6 +30,7 @@ func New(s *service.Service) (engine *bm.Engine) {
 	}
 	svc = s
 	engine = bm.DefaultServer(hc.Server)
+	pb.RegisterDemoBMServer(engine, svc)
 	initRouter(engine)
 	if err := engine.Start(); err != nil {
 		panic(err)

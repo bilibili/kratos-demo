@@ -37,6 +37,15 @@ func (s *Service) SayHello(ctx context.Context, req *pb.HelloReq) (reply *empty.
 	return
 }
 
+// SayHelloURL bm demo func.
+func (s *Service) SayHelloURL(ctx context.Context, req *pb.HelloReq) (reply *pb.HelloResp, err error) {
+	reply = &pb.HelloResp{
+		Content: "hello " + req.Name,
+	}
+	fmt.Printf("hello url %s", req.Name)
+	return
+}
+
 // Ping ping the resource.
 func (s *Service) Ping(ctx context.Context) (err error) {
 	return s.dao.Ping(ctx)

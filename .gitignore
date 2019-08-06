@@ -12,5 +12,4 @@
 *.out
 
 kratos-demo
-go.sum
 cmd/cmd

@@ -1,7 +1,7 @@
 {
     "swagger": "2.0",
     "info": {
-        "title": "api.proto",
+        "title": "kratos-demo/api/api.proto",
         "version": "1"
     },
     "schemes": [
@@ -16,6 +16,41 @@
         "application/json"
     ],
     "paths": {
+        "/demo.service.v1.Demo/SayHello": {
+            "get": {
+                "summary": "/demo.service.v1.Demo/SayHello",
+                "responses": {
+                    "200": {
+                        "description": "A successful response.",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "code": {
+                                    "type": "integer"
+                                },
+                                "message": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "$ref": "#/definitions/.google.protobuf.Empty"
+                                }
+                            }
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "demo.service.v1.Demo"
+                ]
+            }
+        },
         "/kratos-demo/say_hello": {
             "get": {
                 "summary": "/kratos-demo/say_hello",
@@ -71,6 +106,11 @@
                     "type": "string"
                 }
             }
+        },
+        ".google.protobuf.Empty": {
+            "type": "object",
+            "properties": {},
+            "description": "A generic empty message that you can re-use to avoid defining duplicated\n empty messages in your APIs. A typical example is to use it as the request\n or the response type of an API method. For instance:\n\n     service Foo {\n       rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n     }\n\n The JSON representation for `Empty` is empty JSON object `{}`."
         }
     }
 }

@@ -1,8 +1,5 @@
-
-demoExpire = "24h"
-
-[demo]
-	name = "kratos-demo"
+[Client]
+	name = "abc"
 	proto = "tcp"
 	addr = "127.0.0.1:11211"
 	active = 50
@@ -10,4 +7,4 @@ demoExpire = "24h"
 	dialTimeout = "100ms"
 	readTimeout = "200ms"
 	writeTimeout = "300ms"
-	idleTimeout = "80s"
+    idleTimeout = "80s"

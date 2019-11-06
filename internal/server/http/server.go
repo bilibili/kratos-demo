@@ -5,49 +5,44 @@ import (
 
 	pb "kratos-demo/api"
 	"kratos-demo/internal/model"
-	"kratos-demo/internal/service"
-
 	"github.com/bilibili/kratos/pkg/conf/paladin"
 	"github.com/bilibili/kratos/pkg/log"
 	bm "github.com/bilibili/kratos/pkg/net/http/blademaster"
 )
 
-var (
-	svc *service.Service
-)
+var svc pb.DemoServer
 
 // New new a bm server.
-func New(s *service.Service) (engine *bm.Engine) {
+func New(s pb.DemoServer) (engine *bm.Engine, err error) {
 	var (
 		hc struct {
 			Server *bm.ServerConfig
 		}
 	)
-	if err := paladin.Get("http.toml").UnmarshalTOML(&hc); err != nil {
+	if err = paladin.Get("http.toml").UnmarshalTOML(&hc); err != nil {
 		if err != paladin.ErrNotExist {
-			panic(err)
+			return
 		}
+		err = nil
 	}
 	svc = s
 	engine = bm.DefaultServer(hc.Server)
-	pb.RegisterDemoBMServer(engine, svc)
+	pb.RegisterDemoBMServer(engine, s)
 	initRouter(engine)
-	if err := engine.Start(); err != nil {
-		panic(err)
-	}
+	err = engine.Start()
 	return
 }
 
 func initRouter(e *bm.Engine) {
 	e.Ping(ping)
-	g := e.Group("/kratos-demo")
+	g := e.Group("/abc")
 	{
 		g.GET("/start", howToStart)
 	}
 }
 
 func ping(ctx *bm.Context) {
-	if err := svc.Ping(ctx); err != nil {
+	if _, err := svc.Ping(ctx, nil); err != nil {
 		log.Error("ping error(%v)", err)
 		ctx.AbortWithStatus(http.StatusServiceUnavailable)
 	}
@@ -60,4 +55,3 @@ func howToStart(c *bm.Context) {
 	}
 	c.JSON(k, nil)
 }
-

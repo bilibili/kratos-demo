@@ -4,3 +4,9 @@ package model
 type Kratos struct {
 	Hello string
 }
+
+type Article struct {
+	ID int64
+	Content string
+	Author string
+}

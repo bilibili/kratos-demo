@@ -18,16 +18,13 @@ type Service struct {
 }
 
 // New new a service and return.
-func New() (s *Service) {
-	var ac = new(paladin.TOML)
-	if err := paladin.Watch("application.toml", ac); err != nil {
-		panic(err)
-	}
+func New(d dao.Dao) (s *Service, err error) {
 	s = &Service{
-		ac:  ac,
-		dao: dao.New(),
+		ac:  &paladin.TOML{},
+		dao: d,
 	}
-	return s
+	err = paladin.Watch("application.toml", s.ac)
+	return
 }
 
 // SayHello grpc demo func.
@@ -47,8 +44,8 @@ func (s *Service) SayHelloURL(ctx context.Context, req *pb.HelloReq) (reply *pb.
 }
 
 // Ping ping the resource.
-func (s *Service) Ping(ctx context.Context) (err error) {
-	return s.dao.Ping(ctx)
+func (s *Service) Ping(ctx context.Context, e *empty.Empty) (*empty.Empty, error) {
+	return &empty.Empty{}, s.dao.Ping(ctx)
 }
 
 // Close close the resource.

@@ -6,8 +6,6 @@
 package di
 
 import (
-	"github.com/google/wire"
-	"kratos-demo/api"
 	"kratos-demo/internal/dao"
 	"kratos-demo/internal/server/grpc"
 	"kratos-demo/internal/server/http"
@@ -17,45 +15,69 @@ import (
 // Injectors from wire.go:
 
 func InitApp() (*App, func(), error) {
-	redis, err := dao.NewRedis()
+	redis, cleanup, err := dao.NewRedis()
 	if err != nil {
 		return nil, nil, err
 	}
-	memcache, err := dao.NewMC()
+	memcache, cleanup2, err := dao.NewMC()
 	if err != nil {
+		cleanup()
 		return nil, nil, err
 	}
-	db, err := dao.NewDB()
+	db, cleanup3, err := dao.NewDB()
 	if err != nil {
+		cleanup2()
+		cleanup()
 		return nil, nil, err
 	}
-	daoDao, err := dao.New(redis, memcache, db)
+	daoDao, cleanup4, err := dao.New(redis, memcache, db)
 	if err != nil {
+		cleanup3()
+		cleanup2()
+		cleanup()
 		return nil, nil, err
 	}
-	serviceService, err := service.New(daoDao)
+	serviceService, cleanup5, err := service.New(daoDao)
 	if err != nil {
+		cleanup4()
+		cleanup3()
+		cleanup2()
+		cleanup()
 		return nil, nil, err
 	}
 	engine, err := http.New(serviceService)
 	if err != nil {
+		cleanup5()
+		cleanup4()
+		cleanup3()
+		cleanup2()
+		cleanup()
 		return nil, nil, err
 	}
 	server, err := grpc.New(serviceService)
 	if err != nil {
+		cleanup5()
+		cleanup4()
+		cleanup3()
+		cleanup2()
+		cleanup()
 		return nil, nil, err
 	}
-	app, cleanup, err := NewApp(serviceService, engine, server)
+	app, cleanup6, err := NewApp(serviceService, engine, server)
 	if err != nil {
+		cleanup5()
+		cleanup4()
+		cleanup3()
+		cleanup2()
+		cleanup()
 		return nil, nil, err
 	}
 	return app, func() {
+		cleanup6()
+		cleanup5()
+		cleanup4()
+		cleanup3()
+		cleanup2()
 		cleanup()
 	}, nil
 }
-
-// wire.go:
-
-var daoProvider = wire.NewSet(dao.New, dao.NewDB, dao.NewRedis, dao.NewMC)
-
-var serviceProvider = wire.NewSet(service.New, wire.Bind(new(api.DemoServer), new(*service.Service)))
